@@ -11,7 +11,7 @@ sudo apt install docker-ce -y
 
 #install Apache2
 sudo apt-get update -y && sudo apt-get upgrade -y
-sudo apt install apache2
+sudo apt install apache2 -y
 sudo ufw allow in "Apache"
 
 #install docker-compose
@@ -38,8 +38,8 @@ sudo a2ensite prestawebsite
 #download prestashop
 cd /var/www/html
 rm index.html
-sudo wget https://download.prestashop.com/download/releases/prestashop_1.7.8.1.zip
-sudo unzip prestashop_1.7.8.1.zip
+sudo wget https://assets.prestashop3.com/dst/edition/corporate/8.1.4/prestashop_edition_classic_version_8.1.4.zip
+sudo unzip prestashop_edition_classic_version_8.1.4.zip
 
 cd 
 
