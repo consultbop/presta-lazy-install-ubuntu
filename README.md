@@ -25,17 +25,17 @@ _LAMP Stack_
 - Linux : Ubuntu 24.04 LTS
 - Apache : Apache2
 - MySQL : Version 8.0 (via Docker)
-- PHP : PHP 8.1
+- PHP : PHP 8.4 (recommended for PrestaShop 9)
 
 # Prestashop Version
-Currently using PrestaShop 8.1.7 for the latest stable release.
-Make sure the theme and module versions are compatible with 8.1.x.
-If you need to change the PrestaShop version, update the download URL in the install.sh script.
+Currently using PrestaShop 9.0.0 - the latest major release with modern architecture.
+This version includes Symfony 6.4 LTS, new Admin API, and the Hummingbird theme.
 
 # Changes for Ubuntu 24 Compatibility
 - Updated Docker installation method (removed deprecated `apt-key`)
 - Updated to use Docker Compose plugin instead of standalone docker-compose
-- Specified PHP 8.1 for better compatibility
+- Installed PHP 8.4 with all required extensions for PrestaShop 9
 - Updated to MySQL 8.0 with proper authentication plugin
 - Fixed file permissions and ownership commands
-- Updated PrestaShop to latest stable version (8.1.7)
+- Updated PrestaShop to version 9.0.0
+- Added ondrej/php PPA for PHP 8.4 support on Ubuntu 24 LTS

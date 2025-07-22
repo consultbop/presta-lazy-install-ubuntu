@@ -54,9 +54,24 @@ sudo ln -s /etc/apache2/sites-available/prestawebsite.conf /etc/apache2/sites-en
 
 sudo systemctl restart apache2
 
-#install PHP (specify PHP 8.1 for better compatibility)
-sudo apt install php8.1 libapache2-mod-php8.1 php8.1-mysql -y
-sudo apt-get install php8.1-cli php8.1-common php8.1-mbstring php8.1-gd php8.1-intl php8.1-xml php8.1-mysql php8.1-zip php8.1-curl php8.1-xmlrpc -y
+#install PHP (PHP 8.4 for PrestaShop 9 compatibility - Ubuntu 24 LTS)
+# Adding ondrej/php PPA to get PHP 8.4 on Ubuntu 24 LTS
+sudo apt install software-properties-common -y
+sudo add-apt-repository ppa:ondrej/php -y
+sudo apt update -y
+
+# Install PHP 8.4 and required extensions for PrestaShop 9
+sudo apt install php8.4 libapache2-mod-php8.4 -y
+sudo apt install php8.4-cli php8.4-common php8.4-curl php8.4-dom php8.4-fileinfo -y
+sudo apt install php8.4-gd php8.4-iconv php8.4-intl php8.4-json php8.4-mbstring -y
+sudo apt install php8.4-mysql php8.4-openssl php8.4-pdo php8.4-simplexml -y
+sudo apt install php8.4-zip php8.4-xml php8.4-xmlrpc -y
+
+# Configure PHP settings for PrestaShop
+sudo sed -i 's/memory_limit = .*/memory_limit = 512M/' /etc/php/8.4/apache2/php.ini
+sudo sed -i 's/allow_url_fopen = .*/allow_url_fopen = On/' /etc/php/8.4/apache2/php.ini
+sudo sed -i 's/allow_url_include = .*/allow_url_include = Off/' /etc/php/8.4/apache2/php.ini
+
 sudo systemctl restart apache2
 
 sudo apt-get install unzip -y
@@ -66,12 +81,33 @@ sudo a2enmod rewrite
 sudo a2ensite prestawebsite
 
 
-#download prestashop (updated to latest stable version)
+#download prestashop (PrestaShop 9.0.0 with PHP 8.4 compatibility)
 cd /var/www/html
 sudo rm -f index.html
-sudo wget https://github.com/PrestaShop/PrestaShop/releases/download/8.1.7/prestashop_8.1.7.zip
-sudo unzip prestashop_8.1.7.zip
-sudo rm prestashop_8.1.7.zip
+echo "Downloading PrestaShop 9.0.0..."
+
+# Try official PrestaShop download first
+if sudo wget -q --spider https://assets.prestashop3.com/dst/edition/corporate/9.0.0/prestashop_edition_classic_version_9.0.0.zip; then
+    echo "Downloading from official PrestaShop repository..."
+    sudo wget https://assets.prestashop3.com/dst/edition/corporate/9.0.0/prestashop_edition_classic_version_9.0.0.zip -O prestashop_9.0.0.zip
+else
+    echo "Official download not available, downloading source from GitHub..."
+    sudo wget https://api.github.com/repos/PrestaShop/PrestaShop/zipball/9.0.0 -O prestashop_9.0.0.zip
+fi
+
+sudo unzip -q prestashop_9.0.0.zip
+sudo rm prestashop_9.0.0.zip
+
+# Handle GitHub source directory structure if needed
+if [ -d "PrestaShop-*" ]; then
+    echo "Extracting GitHub source..."
+    sudo mv PrestaShop-* prestashop_source
+    sudo mv prestashop_source/* ./
+    sudo mv prestashop_source/.* ./ 2>/dev/null || true
+    sudo rmdir prestashop_source
+fi
+
+echo "PrestaShop 9.0.0 extracted successfully."
 
 cd 
 
@@ -89,8 +125,14 @@ sleep 30
 echo ""
 echo "=== Installation Complete! ==="
 echo ""
-echo "PrestaShop has been installed and configured."
+echo "PrestaShop 9.0.0 has been installed and configured with PHP 8.4."
 echo "MySQL container is running in the background."
+echo ""
+echo "System Configuration:"
+echo "- PHP 8.4 (recommended for PrestaShop 9)"
+echo "- All required PHP extensions installed"
+echo "- MySQL 8.0 via Docker"
+echo "- Apache 2.4 with mod_rewrite enabled"
 echo ""
 echo "Next steps:"
 echo "1. Log out and log back in (or restart) for Docker permissions to take effect"
@@ -102,6 +144,13 @@ echo "- Database server: localhost:3306"
 echo "- Database name: (as configured in setup)"
 echo "- Database user: prestashop"
 echo "- Database password: (as configured in setup)"
+echo ""
+echo "🚀 PrestaShop 9.0.0 Features:"
+echo "- Symfony 6.4 LTS support"
+echo "- PHP 8.1-8.4 compatibility"
+echo "- New Admin API with API Platform"
+echo "- Modern Hummingbird theme available"
+echo "- Enhanced security and performance"
 echo ""
 
 # # mysql docker config
